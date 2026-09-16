@@ -42,29 +42,48 @@ namespace DeveloperTest
             object countsLock = new object();
             IDictionary<string, int> counts = WordFrequencyProcessor.CreateCounts();
             Task[] readerTasks = readers
-                .Select(reader => WordFrequencyProcessor.CountWordsAsync(
-                    reader,
-                    counts,
-                    countsLock,
-                    cancellationToken))
+                .Select(reader => Task.Run(() =>
+                    WordFrequencyProcessor.CountWordsAsync(
+                        reader,
+                        counts,
+                        countsLock,
+                        cancellationToken)))
                 .ToArray();
             Task allReadersTask = Task.WhenAll(readerTasks);
 
-            while (!allReadersTask.IsCompleted)
+            try
             {
-                Task timerTask = Task.Delay(ProgressInterval, cancellationToken);
-                Task completedTask = await Task
-                    .WhenAny(allReadersTask, timerTask)
-                    .ConfigureAwait(false);
-
-                if (completedTask == allReadersTask)
+                while (!allReadersTask.IsCompleted)
                 {
-                    break;
+                    Task timerTask = Task.Delay(ProgressInterval, cancellationToken);
+                    Task completedTask = await Task
+                        .WhenAny(allReadersTask, timerTask)
+                        .ConfigureAwait(false);
+
+                    if (completedTask == allReadersTask)
+                    {
+                        break;
+                    }
+
+                    // Awaiting the timer propagates cancellation before any more output is written.
+                    await timerTask.ConfigureAwait(false);
+                    WordFrequencyProcessor.WriteResults(output, counts, countsLock, cancellationToken);
+                }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Readers receive the same token. Await them so their cancellation cleanup
+                // finishes and every task exception is observed before cancellation escapes.
+                try
+                {
+                    await allReadersTask.ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                    // Preserve the cancellation that caused this path after observing the task.
                 }
 
-                // Awaiting the timer propagates cancellation before any more output is written.
-                await timerTask.ConfigureAwait(false);
-                WordFrequencyProcessor.WriteResults(output, counts, countsLock, cancellationToken);
+                throw;
             }
 
             // Observe and propagate exceptions (including cancellation) from every reader.
