@@ -1,1 +1,1 @@
-﻿It consists of a single class, DeveloperTestImplementation, which implements the interface IDeveloperTest.
+﻿It contains a single class, DeveloperTestImplementation, which implements the IDeveloperTest interface.
