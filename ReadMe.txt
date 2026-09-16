@@ -49,7 +49,7 @@ Test
 
 After the Release build, run the tests with Visual Studio Test Explorer or:
 
-    vstest.console.exe DeveloperTestFrameworkUnitTests\bin\Release\DeveloperTestFramework.dll /TestAdapterPath:packages\NUnit3TestAdapter.3.2.0
+    vstest.console.exe DeveloperTestFrameworkUnitTests\bin\Release\DeveloperTestFramework.dll /TestAdapterPath:packages\NUnit3TestAdapter.3.2.0\lib
 
 The slow-reader tests intentionally take several minutes because they verify the
 ten-second progress reporting and parallel reader processing.

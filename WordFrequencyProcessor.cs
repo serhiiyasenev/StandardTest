@@ -75,6 +75,8 @@ namespace DeveloperTest
             object countsLock,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             List<KeyValuePair<string, int>> snapshot;
             lock (countsLock)
             {
