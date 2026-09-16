@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeveloperTest</RootNamespace>
     <AssemblyName>DeveloperTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="DeveloperTestImplementation.cs" />
     <Compile Include="DeveloperTestImplementationAsync.cs" />
+    <Compile Include="WordFrequencyProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
